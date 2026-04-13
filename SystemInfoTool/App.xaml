@@ -1,0 +1,21 @@
+﻿<Application x:Class="SystemInfoTool.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:SystemInfoTool.Converters"
+             Startup="App_OnStartup">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Theme dictionary — swapped at runtime by ThemeService -->
+                <ResourceDictionary Source="Themes/Light.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Value converters available application-wide -->
+            <converters:BoolToVisibilityConverter  x:Key="BoolToVisibilityConverter"/>
+            <converters:BoolToVisibilityConverter  x:Key="InvertedBoolToVisibilityConverter" Invert="True"/>
+            <converters:NullToVisibilityConverter  x:Key="NullToVisibilityConverter"/>
+            <converters:NullToVisibilityConverter  x:Key="NullToCollapsedConverter" Invert="True"/>
+            <converters:SmartStatusToColorConverter x:Key="SmartStatusToColorConverter"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,144 @@
+<UserControl x:Class="SystemInfoTool.Views.MotherboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="{DynamicResource WindowBackgroundBrush}">
+
+    <DockPanel>
+        <!-- ================================================================
+             Error Panel
+             ================================================================ -->
+        <Border DockPanel.Dock="Top"
+                Background="{DynamicResource ErrorPanelBackgroundBrush}"
+                BorderBrush="{DynamicResource ErrorPanelBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                Margin="12,10,12,0"
+                Padding="12,8"
+                Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="⚠  "
+                           Foreground="{DynamicResource ErrorForegroundBrush}"
+                           FontWeight="Bold"/>
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="{DynamicResource ErrorForegroundBrush}"
+                           TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ================================================================
+             Main content
+             ================================================================ -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Padding="12,10,12,12">
+            <StackPanel>
+
+                <!-- Board name header -->
+                <TextBlock FontSize="{DynamicResource TitleFontSize}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource AccentBrush}"
+                           Margin="0,0,0,12">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0}  {1}">
+                            <Binding Path="Info.Manufacturer" FallbackValue="—"/>
+                            <Binding Path="Info.ProductName"  FallbackValue=""/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+
+                <!-- Section: Board -->
+                <TextBlock Text="Motherboard"
+                           FontSize="{DynamicResource HeaderFontSize}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource SecondaryForegroundBrush}"
+                           Margin="0,0,0,4"/>
+                <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="0,0,0,8"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Manufacturer"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Info.Manufacturer, FallbackValue='—'}"
+                               Margin="0,3"/>
+
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Product Name"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Info.ProductName, FallbackValue='—'}"
+                               Margin="0,3"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Revision"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Info.Version, FallbackValue='—'}"
+                               Margin="0,3"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Chipset"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding Info.ChipsetModel, FallbackValue='Unavailable'}"
+                               Margin="0,3"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Memory Slots"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Margin="0,3">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} populated / {1} total">
+                                <Binding Path="Info.PopulatedMemorySlots" FallbackValue="—"/>
+                                <Binding Path="Info.TotalMemorySlots"     FallbackValue="—"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+
+                <!-- Section: BIOS / UEFI -->
+                <TextBlock Text="BIOS / UEFI"
+                           FontSize="{DynamicResource HeaderFontSize}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource SecondaryForegroundBrush}"
+                           Margin="0,16,0,4"/>
+                <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="0,0,0,8"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Vendor"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Info.BiosVendor, FallbackValue='—'}"
+                               Margin="0,3"/>
+
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Version"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Info.BiosVersion, FallbackValue='—'}"
+                               Margin="0,3"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Release Date"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Info.BiosReleaseDate, FallbackValue='—'}"
+                               Margin="0,3"/>
+                </Grid>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

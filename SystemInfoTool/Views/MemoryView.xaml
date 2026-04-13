@@ -1,0 +1,185 @@
+<UserControl x:Class="SystemInfoTool.Views.MemoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="{DynamicResource WindowBackgroundBrush}">
+
+    <DockPanel>
+        <!-- ================================================================
+             Error Panel
+             ================================================================ -->
+        <Border DockPanel.Dock="Top"
+                Background="{DynamicResource ErrorPanelBackgroundBrush}"
+                BorderBrush="{DynamicResource ErrorPanelBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                Margin="12,10,12,0"
+                Padding="12,8"
+                Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="⚠  "
+                           Foreground="{DynamicResource ErrorForegroundBrush}"
+                           FontWeight="Bold"/>
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="{DynamicResource ErrorForegroundBrush}"
+                           TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ================================================================
+             Main content
+             ================================================================ -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Padding="12,10,12,12">
+            <StackPanel>
+
+                <!-- Summary header -->
+                <TextBlock FontSize="{DynamicResource TitleFontSize}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource AccentBrush}"
+                           Margin="0,0,0,12">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0} MB  {1}">
+                            <Binding Path="Info.TotalInstalledMb" FallbackValue="—"/>
+                            <Binding Path="Info.MemoryType"       FallbackValue=""/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+
+                <!-- Section: Overview -->
+                <TextBlock Text="Memory Overview"
+                           FontSize="{DynamicResource HeaderFontSize}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource SecondaryForegroundBrush}"
+                           Margin="0,0,0,4"/>
+                <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="0,0,0,8"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Total Installed"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="0,3">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} MB">
+                                <Binding Path="Info.TotalInstalledMb" FallbackValue="—"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Memory Type"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Info.MemoryType, FallbackValue='—'}"
+                               Margin="0,3"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Channel Config"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Info.ChannelConfig, FallbackValue='—'}"
+                               Margin="0,3"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Current Frequency"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="1" Grid.Column="3" Margin="0,3">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} MHz">
+                                <Binding Path="Info.CurrentFrequencyMhz" FallbackValue="—"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="XMP / EXPO Frequency"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Margin="0,3">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} MHz">
+                                <Binding Path="Info.XmpFrequencyMhz" FallbackValue="N/A"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+
+                <!-- Section: Per-Slot Details -->
+                <TextBlock Text="Memory Slots"
+                           FontSize="{DynamicResource HeaderFontSize}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource SecondaryForegroundBrush}"
+                           Margin="0,16,0,4"/>
+                <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="0,0,0,8"/>
+
+                <DataGrid ItemsSource="{Binding Slots}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserReorderColumns="False"
+                          CanUserResizeRows="False"
+                          GridLinesVisibility="Horizontal"
+                          HeadersVisibility="Column"
+                          RowBackground="{DynamicResource PanelBackgroundBrush}"
+                          AlternatingRowBackground="{DynamicResource AlternateRowBrush}"
+                          BorderBrush="{DynamicResource BorderBrush}"
+                          BorderThickness="1"
+                          HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Disabled"
+                          MaxHeight="320">
+
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background"   Value="{DynamicResource TabBackgroundBrush}"/>
+                            <Setter Property="Foreground"   Value="{DynamicResource SecondaryForegroundBrush}"/>
+                            <Setter Property="FontSize"     Value="{DynamicResource SmallFontSize}"/>
+                            <Setter Property="FontWeight"   Value="SemiBold"/>
+                            <Setter Property="Padding"      Value="8,4"/>
+                            <Setter Property="BorderBrush"  Value="{DynamicResource BorderBrush}"/>
+                            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="Padding"      Value="8,4"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="FontSize"     Value="{DynamicResource SmallFontSize}"/>
+                        </Style>
+                    </DataGrid.CellStyle>
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Slot"         Binding="{Binding SlotLabel}"    Width="80"/>
+                        <DataGridTextColumn Header="Populated"    Width="80">
+                            <DataGridTextColumn.Binding>
+                                <Binding Path="IsPopulated" Converter="{StaticResource BoolToVisibilityConverter}"/>
+                            </DataGridTextColumn.Binding>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Capacity (MB)" Binding="{Binding CapacityMb, FallbackValue='N/A'}"  Width="110"/>
+                        <DataGridTextColumn Header="Manufacturer"  Binding="{Binding Manufacturer, FallbackValue='N/A'}" Width="130"/>
+                        <DataGridTextColumn Header="Part Number"   Binding="{Binding PartNumber, FallbackValue='N/A'}"   Width="160"/>
+                        <DataGridTextColumn Header="Serial"        Binding="{Binding SerialNumber, FallbackValue='N/A'}" Width="130"/>
+                        <DataGridTextColumn Header="Speed (MHz)"   Binding="{Binding SpeedMhz, FallbackValue='N/A'}"    Width="100"/>
+                        <DataGridTextColumn Header="Timings (CL-tRCD-tRP-tRAS)" Width="*">
+                            <DataGridTextColumn.Binding>
+                                <MultiBinding StringFormat="{}{0}-{1}-{2}-{3}" FallbackValue="N/A">
+                                    <Binding Path="Timings.CL"   FallbackValue="N/A"/>
+                                    <Binding Path="Timings.tRCD" FallbackValue="N/A"/>
+                                    <Binding Path="Timings.tRP"  FallbackValue="N/A"/>
+                                    <Binding Path="Timings.tRAS" FallbackValue="N/A"/>
+                                </MultiBinding>
+                            </DataGridTextColumn.Binding>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,181 @@
+<UserControl x:Class="SystemInfoTool.Views.GraphicsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="{DynamicResource WindowBackgroundBrush}">
+
+    <DockPanel>
+        <!-- ================================================================
+             Error Panel
+             ================================================================ -->
+        <Border DockPanel.Dock="Top"
+                Background="{DynamicResource ErrorPanelBackgroundBrush}"
+                BorderBrush="{DynamicResource ErrorPanelBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                Margin="12,10,12,0"
+                Padding="12,8"
+                Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="⚠  "
+                           Foreground="{DynamicResource ErrorForegroundBrush}"
+                           FontWeight="Bold"/>
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="{DynamicResource ErrorForegroundBrush}"
+                           TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ================================================================
+             GPU selector
+             ================================================================ -->
+        <StackPanel DockPanel.Dock="Top"
+                    Orientation="Horizontal"
+                    Margin="12,10,12,0">
+            <TextBlock Text="GPU:"
+                       Foreground="{DynamicResource SecondaryForegroundBrush}"
+                       Margin="0,0,8,0"/>
+            <ComboBox ItemsSource="{Binding GpuList}"
+                      SelectedIndex="{Binding SelectedGpuIndex, Mode=TwoWay}"
+                      DisplayMemberPath="Name"
+                      MinWidth="300"/>
+        </StackPanel>
+
+        <!-- ================================================================
+             Main content — bound to the selected GPU via SelectedGpuIndex
+             ================================================================ -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Padding="12,10,12,12">
+            <StackPanel>
+
+                <!-- GPU name header (from selected item) -->
+                <TextBlock FontSize="{DynamicResource TitleFontSize}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource AccentBrush}"
+                           Margin="0,0,0,12"
+                           Text="{Binding GpuList[0].Name, FallbackValue='—'}"/>
+
+                <!-- Section: Adapter -->
+                <TextBlock Text="Graphics Adapter"
+                           FontSize="{DynamicResource HeaderFontSize}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource SecondaryForegroundBrush}"
+                           Margin="0,0,0,4"/>
+                <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="0,0,0,8"/>
+
+                <!-- Use an ItemsControl so the selected GPU drives the display -->
+                <ItemsControl ItemsSource="{Binding GpuList}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="180"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="180"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="GPU Name"
+                                           Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Name, FallbackValue='—'}"
+                                           Margin="0,3"/>
+
+                                <TextBlock Grid.Row="0" Grid.Column="2" Text="Chip Model"
+                                           Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding ChipModel, FallbackValue='—'}"
+                                           Margin="0,3"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Manufacturer"
+                                           Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Manufacturer, FallbackValue='—'}"
+                                           Margin="0,3"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="2" Text="Video Memory"
+                                           Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                                <TextBlock Grid.Row="1" Grid.Column="3" Margin="0,3">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} MB  {1}">
+                                            <Binding Path="VideoMemoryMb" FallbackValue="—"/>
+                                            <Binding Path="MemoryType"    FallbackValue=""/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Driver Version"
+                                           Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DriverVersion, FallbackValue='—'}"
+                                           Margin="0,3"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="2" Text="Driver Date"
+                                           Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                                <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding DriverDate, FallbackValue='—'}"
+                                           Margin="0,3"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Section: Live Sensors -->
+                <TextBlock Text="Live Sensors"
+                           FontSize="{DynamicResource HeaderFontSize}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource SecondaryForegroundBrush}"
+                           Margin="0,16,0,4"/>
+                <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="0,0,0,8"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Core Clock"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="0,3">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0:F0} MHz">
+                                <Binding Path="SensorData.CoreClockMhz" FallbackValue="—"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Memory Clock"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Margin="0,3">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0:F0} MHz">
+                                <Binding Path="SensorData.MemoryClockMhz" FallbackValue="—"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Temperature"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,3">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0:F1} °C">
+                                <Binding Path="SensorData.TemperatureCelsius" FallbackValue="—"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,247 @@
+<UserControl x:Class="SystemInfoTool.Views.CpuView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="{DynamicResource WindowBackgroundBrush}">
+
+    <UserControl.Resources>
+        <!-- Label column width shared across all info grids -->
+        <GridLength x:Key="LabelColumnWidth">180</GridLength>
+    </UserControl.Resources>
+
+    <DockPanel>
+        <!-- ================================================================
+             Error Panel — visible only when ErrorMessage is non-null
+             ================================================================ -->
+        <Border DockPanel.Dock="Top"
+                Background="{DynamicResource ErrorPanelBackgroundBrush}"
+                BorderBrush="{DynamicResource ErrorPanelBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                Margin="12,10,12,0"
+                Padding="12,8"
+                Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="⚠  "
+                           Foreground="{DynamicResource ErrorForegroundBrush}"
+                           FontWeight="Bold"/>
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="{DynamicResource ErrorForegroundBrush}"
+                           TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ================================================================
+             Socket selector — hidden when only one socket
+             ================================================================ -->
+        <StackPanel DockPanel.Dock="Top"
+                    Orientation="Horizontal"
+                    Margin="12,10,12,0"
+                    Visibility="{Binding SocketList.Count, Converter={StaticResource BoolToVisibilityConverter}}">
+            <TextBlock Text="CPU Socket:"
+                       Foreground="{DynamicResource SecondaryForegroundBrush}"
+                       Margin="0,0,8,0"/>
+            <ComboBox ItemsSource="{Binding SocketList}"
+                      SelectedIndex="{Binding SelectedSocketIndex, Mode=TwoWay}"
+                      MinWidth="260"/>
+        </StackPanel>
+
+        <!-- ================================================================
+             Main content — scrollable
+             ================================================================ -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Padding="12,10,12,12">
+            <StackPanel>
+
+                <!-- CPU Name header -->
+                <TextBlock Text="{Binding StaticInfo.Name, FallbackValue='—'}"
+                           FontSize="{DynamicResource TitleFontSize}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource AccentBrush}"
+                           Margin="0,0,0,12"/>
+
+                <!-- Section: Processor Identity -->
+                <TextBlock Text="Processor"
+                           FontSize="{DynamicResource HeaderFontSize}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource SecondaryForegroundBrush}"
+                           Margin="0,0,0,4"/>
+                <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="0,0,0,8"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Row 0 -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Code Name"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding StaticInfo.CodeName, FallbackValue='—'}"
+                               Margin="0,3"/>
+
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Package"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding StaticInfo.PackageType, FallbackValue='—'}"
+                               Margin="0,3"/>
+
+                    <!-- Row 1 -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Physical Cores"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding StaticInfo.PhysicalCores, FallbackValue='—'}"
+                               Margin="0,3"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Logical Processors"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding StaticInfo.LogicalProcessors, FallbackValue='—'}"
+                               Margin="0,3"/>
+
+                    <!-- Row 2 -->
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Base Clock"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Margin="0,3">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0:F0} MHz">
+                                <Binding Path="StaticInfo.BaseClockMhz" FallbackValue="—"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="2" Grid.Column="2" Text="Current Clock"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="2" Grid.Column="3" Margin="0,3">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0:F0} MHz">
+                                <Binding Path="SensorData.CurrentClockMhz" FallbackValue="—"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <!-- Row 3 -->
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="TDP"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="0,3">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0:F0} W">
+                                <Binding Path="StaticInfo.TdpWatts" FallbackValue="—"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="3" Grid.Column="2" Text="Temperature"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="3" Grid.Column="3" Margin="0,3">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0:F1} °C">
+                                <Binding Path="SensorData.TemperatureCelsius" FallbackValue="—"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+
+                <!-- Section: Cache-->
+                <TextBlock Text="Cache"
+                           FontSize="{DynamicResource HeaderFontSize}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource SecondaryForegroundBrush}"
+                           Margin="0,16,0,4"/>
+                <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="0,0,0,8"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- L1 -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="L1 Cache"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="0,3">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} KB  ({1}-way, {2})">
+                                <Binding Path="StaticInfo.L1.SizeKb"       FallbackValue="—"/>
+                                <Binding Path="StaticInfo.L1.Associativity" FallbackValue="—"/>
+                                <Binding Path="StaticInfo.L1.Type"          FallbackValue="—"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <!-- L2 -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="L2 Cache"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,3">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} KB  ({1}-way, {2})">
+                                <Binding Path="StaticInfo.L2.SizeKb"       FallbackValue="—"/>
+                                <Binding Path="StaticInfo.L2.Associativity" FallbackValue="—"/>
+                                <Binding Path="StaticInfo.L2.Type"          FallbackValue="—"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <!-- L3 -->
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="L3 Cache"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Margin="0,3">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} KB  ({1}-way, {2})">
+                                <Binding Path="StaticInfo.L3.SizeKb"       FallbackValue="—"/>
+                                <Binding Path="StaticInfo.L3.Associativity" FallbackValue="—"/>
+                                <Binding Path="StaticInfo.L3.Type"          FallbackValue="—"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+
+                <!-- Section: ISA Extensions -->
+                <TextBlock Text="Instruction Set Extensions"
+                           FontSize="{DynamicResource HeaderFontSize}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource SecondaryForegroundBrush}"
+                           Margin="0,16,0,4"/>
+                <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="0,0,0,8"/>
+
+                <ItemsControl ItemsSource="{Binding StaticInfo.IsaExtensions}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{DynamicResource AlternateRowBrush}"
+                                    BorderBrush="{DynamicResource BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="3"
+                                    Padding="6,2"
+                                    Margin="0,0,4,4">
+                                <TextBlock Text="{Binding}"
+                                           FontSize="{DynamicResource SmallFontSize}"/>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,125 @@
+<UserControl x:Class="SystemInfoTool.Views.StorageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="{DynamicResource WindowBackgroundBrush}">
+
+    <DockPanel>
+        <!-- ================================================================
+             Error Panel
+             ================================================================ -->
+        <Border DockPanel.Dock="Top"
+                Background="{DynamicResource ErrorPanelBackgroundBrush}"
+                BorderBrush="{DynamicResource ErrorPanelBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                Margin="12,10,12,0"
+                Padding="12,8"
+                Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="⚠  "
+                           Foreground="{DynamicResource ErrorForegroundBrush}"
+                           FontWeight="Bold"/>
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="{DynamicResource ErrorForegroundBrush}"
+                           TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ================================================================
+             Drive list
+             ================================================================ -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Padding="12,10,12,12">
+            <StackPanel>
+
+                <TextBlock Text="Storage Devices"
+                           FontSize="{DynamicResource TitleFontSize}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource AccentBrush}"
+                           Margin="0,0,0,12"/>
+
+                <!-- One card per drive -->
+                <ItemsControl ItemsSource="{Binding Drives}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{DynamicResource PanelBackgroundBrush}"
+                                    BorderBrush="{DynamicResource BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    Padding="12,10"
+                                    Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="180"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="180"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <!-- SMART indicator column -->
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Drive model as card title (spans 4 cols) -->
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4"
+                                               Text="{Binding Model, FallbackValue='Unknown Drive'}"
+                                               FontSize="{DynamicResource LargeFontSize}"
+                                               FontWeight="SemiBold"
+                                               Margin="0,0,0,8"/>
+
+                                    <!-- SMART badge (top-right) -->
+                                    <Border Grid.Row="0" Grid.Column="4" Grid.RowSpan="3"
+                                            CornerRadius="4"
+                                            Padding="10,4"
+                                            VerticalAlignment="Top"
+                                            HorizontalAlignment="Right"
+                                            Background="{Binding SmartHealth, Converter={StaticResource SmartStatusToColorConverter}}">
+                                        <TextBlock Text="{Binding SmartHealth}"
+                                                   Foreground="White"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="{DynamicResource SmallFontSize}"/>
+                                    </Border>
+
+                                    <!-- Row 1 -->
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Manufacturer"
+                                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Manufacturer, FallbackValue='—'}"
+                                               Margin="0,3"/>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Interface"
+                                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding InterfaceType, FallbackValue='—'}"
+                                               Margin="0,3"/>
+
+                                    <!-- Row 2 -->
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Capacity"
+                                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Margin="0,3">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0} GB">
+                                                <Binding Path="CapacityGb" FallbackValue="—"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+
+                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="Firmware"
+                                               Foreground="{DynamicResource SecondaryForegroundBrush}" Margin="0,3"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding FirmwareRevision, FallbackValue='—'}"
+                                               Margin="0,3"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
